@@ -1,3 +1,6 @@
+## Dark Souls 3 - Control Expansion - Hotbar Simulator
+
+
 ### AHK Version
 If you have autohotkey, or are willing to install autohotkey in order to avoid executable files, use this folder.
 
