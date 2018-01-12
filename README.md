@@ -1,6 +1,8 @@
-### If you have autohotkey, or are willing to install autohotkey in order to avoid executable files, use the folder "AHK Version."
+### AHK Version
+If you have autohotkey, or are willing to install autohotkey in order to avoid executable files, use this folder.
 
-### If you haven't the time and want the self contained version, use the compiled version.
+### Compiled Version 
+If you haven't the time and want the self contained version, use this folder.
 
 
 ### If you need more profiles, duplicate any of the .ini files, and rename it. You can also do this in the Load section of the settings. You can name your settings files anything you wish, as long as they end in ".ini".
