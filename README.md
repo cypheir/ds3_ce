@@ -1,4 +1,4 @@
-## Dark Souls 3 - Control Expansion - Hotbar Simulator
+# Dark Souls 3 - Control Expansion - Hotbar Simulator
 
 
 ### AHK Version
