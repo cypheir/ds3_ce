@@ -10,5 +10,7 @@ If you need more profiles, duplicate any of the .ini files, and rename it. You c
 Basic commands:
 
 ~ Right clicking the icon in the system tray will provide certain options.
+
 ~ Ctrl+Sh+Esc (While DS3 is focused) opens control customizations window.
+
 ~ Ctrl+Esc (While DS3 is focused) reloads the hotkey app. Useful if something is glitched.
