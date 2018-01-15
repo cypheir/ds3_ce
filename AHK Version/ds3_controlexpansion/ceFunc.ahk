@@ -3,9 +3,10 @@
 
 	BuildGUI()
 	{
-		Menu, Tray, Icon, %DS3_installpath%
-		Menu, Tray, Tip, Dark Souls 3`nHotbar Conversion 1.4b
-		
+		; Menu, Tray, Icon, %DS3_installpath%
+		Menu, Tray, Icon, ds3icon.ico
+		Menu, Tray, Tip, Dark Souls 3`nHotbar Conversion 1.5
+
 		Menu, tray, add, Launch Dark Souls 3, LaunchDS3  ; Creates a new menu item.
 		Menu, tray, add, Reload Script, Refresh
 		Menu, tray, add, Settings, Settings
@@ -280,8 +281,11 @@
 					Gui, Destroy
 					Gosub, OnStart
 					
-					Sleep, 300
-					GoSub, Settings
+					IfWinExist ahk_class AutoHotkeyGUI
+						WinActivate	
+					
+					; Sleep, 300
+					; GoSub, Settings
 					return
 					
 				ButtonApply:
@@ -315,10 +319,14 @@
 					SaveSettingsFile()
 					Sleep, 300
 					
-					Gui, Destroy
+					; Gui, Destroy
+					; Menu, tray, deleteall
 					Gosub, OnStart
 					
-					GoSub, Settings
+					IfWinExist ahk_class AutoHotkeyGUI
+						WinActivate		
+					
+					; GoSub, Settings
 					Return
 					
 				ButtonOK:
@@ -354,6 +362,7 @@
 					Sleep, 300
 					
 					Gui, Destroy
+					Menu, tray, deleteall
 					Gosub, OnStart
 					
 					IfWinExist ahk_exe DarkSoulsIII.exe
@@ -361,63 +370,7 @@
 					Return
 
 
-;   __ FUNCTIONS ____________________________________
-
-	CheckInstallPath()
-	{
-		if !(DS3_installpath)
-		{
-			FileSelectFile, SelectedFile, 1, , Select file named "DarkSoulsIII.exe", (DarkSoulsIII.exe)
-			if !(SelectedFile)
-			{
-				MsgBox, No file selected
-				ExitApp
-			}
-			else
-			{
-				IniWrite, %SelectedFile%, ds3_controlexpansion\session.ini, Session, DS3_installpath
-				GoSub, OnStart
-			}
-		}	
-		else if InStr(DS3_installpath, "\Game\DarkSoulsIII.exe")
-		{
-			return
-		}		
-		else
-		{
-			MsgBox There was a problem locating game file.
-			ExitApp
-		}
-		return
-	}
-
-	CheckIniFile()
-	{
-		if !(currentSettingsFile)
-		{
-			FileSelectFile, SelectedFile, 1, , Select settings file ending in ".ini", (*.ini)
-			if !(SelectedFile)
-			{
-				MsgBox, No file selected
-				GoSub, OnStart
-			}
-			else
-			{
-				IniWrite, %SelectedFile%, ds3_controlexpansion\session.ini, Session, current
-				GoSub, OnStart
-			}
-		}	
-		else if InStr(DS3_installpath, "\Game\DarkSoulsIII.exe")
-		{
-			return
-		}		
-		else
-		{
-			MsgBox There was a problem locating game file.
-			ExitApp
-		}
-		return
-	}
+;   __ FUNCTIONS ____________________________________	
 	
 	; Item User
 	#IfWinActive ahk_exe DarkSoulsIII.exe
@@ -515,6 +468,34 @@
 		Return
 	}
 	
+	CheckInstallPath()
+	{
+		if !(DS3_installpath)
+		{
+			FileSelectFile, SelectedFile, 1, , Select folder containing "DarkSoulsIII.exe", (DarkSoulsIII.exe)
+			if !(SelectedFile)
+			{
+				MsgBox, No file selected
+				ExitApp
+			}
+			else
+			{
+				IniWrite, %SelectedFile%, %currentSettingsFile%, General, DS3_installpath
+				GoSub, OnStart
+			}
+		}
+		else if InStr(DS3_installpath, "\Game\DarkSoulsIII.exe")
+		{
+			return
+		}		
+		else
+		{
+			MsgBox There was a problem locating game file.
+			ExitApp
+		}
+		return
+	}
+		
 	MacroCheck(F_spellHand, F_spellOverride, F_spellUP)
 	{
 		if (F_spellHand = "R")
@@ -639,41 +620,7 @@
 			sleep, 250
 		}
 	}
-
 	
-	#IfWinActive ahk_exe DarkSoulsIII.exe
-	<^F1::GoSub, Refresh
-		
-	#IfWinActive ahk_exe DarkSoulsIII.exe
-	<^<+F1::GoSub, Settings
-		
-	#IfWinActive ahk_exe DarkSoulsIII.exe
-	*f::
-		Loop
-		{
-			send {f down}
-			sleep, 30
-			send {f up}
-			sleep, 70
-			
-			if not GetKeyState(f, "P") 
-				break
-		}
-		return
-		
-	#IfWinActive ahk_exe DarkSoulsIII.exe
-	*<+f::
-		Loop
-		{
-			send {f down}
-			sleep, 300
-			send {f up}
-			
-			if not GetKeyState(f, "P") 
-				break
-		}
-		return
-
 	AssignSpellKeys()
 	{	
 		if (spellMode = 2) 
@@ -830,8 +777,6 @@
 		Return
 	}
 	
-	
-	
 	AssignItemKeys()
 	{
 		if (item1)
@@ -953,7 +898,10 @@
 	
 	;/////// Load Func ///////
 	LoadSettingsFile()
-	{				
+	{
+		if !(currentSettingsFile)
+			GoSub, ButtonChangeIni
+		
 		IniRead, itemCnt, %currentSettingsFile%, General, itemCnt
 		IniRead, spellCnt, %currentSettingsFile%, General, spellCnt
 		IniRead, spellMode, %currentSettingsFile%, General, spellMode
@@ -1116,7 +1064,7 @@
 	;/////// Load Func ///////
 	SaveSettingsFile()
 	{	
-		IniWrite, %DS3_installpath%, ds3_controlexpansion\session.ini, Session, DS3_installpath
+		; IniWrite, %DS3_installpath%, ds3_controlexpansion\session.ini, Session, DS3_installpath
 		
 		IniWrite, %itemCnt%, %currentSettingsFile%, General, itemCnt
 		IniWrite, %spellCnt%, %currentSettingsFile%, General, spellCnt
@@ -1419,8 +1367,5 @@
 	b_item10a:
 		UseItem("10", itemCnt, item10a)
 		Return
-		
-		
-		
 		
 	
