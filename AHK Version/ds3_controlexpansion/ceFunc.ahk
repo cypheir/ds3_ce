@@ -275,8 +275,8 @@
 					Gui, Destroy
 					Gosub, OnStart
 					
-					IfWinExist ahk_class AutoHotkeyGUI
-						WinActivate	
+					IfWinExist ahk_exe DarkSoulsIII.exe
+						WinActivate
 					
 					; Sleep, 300
 					; GoSub, Settings
@@ -504,14 +504,14 @@
 	{
 		if (F_spellHand = "R")
 		{
-			if (F_spellOverride = 1 || F_spellUP = 1 && spellMode = 2)
+			if (F_spellOverride = 1 && spellMode = 1 || F_spellUP = 1 && spellMode = 2)
 				return otherMacroR
 			else
 				return spellMacroR
 		}
 		else 
 		{
-			if (F_spellOverride = 1 || F_spellUP = 1 && spellMode = 2)
+			if (F_spellOverride = 1 && spellMode = 1 || F_spellUP = 1 && spellMode = 2)
 				return otherMacro
 			else
 				return spellMacro
@@ -654,7 +654,7 @@
 	{	
 		if (spellMode = 2) 	;Weapon
 		{
-			weapCast := 1
+			global weapCast := 1
 			spellMacro := atkOHStrong
 			otherMacro := atkOHLight 
 			spellMacroR := atkMHStrong
@@ -662,7 +662,7 @@
 		}
 		else 				;Focus
 		{
-			weapCast := 0
+			global weapCast := 0
 			spellMacro := atkOHLight 
 			otherMacro := atkOHStrong
 			spellMacroR := atkMHLight 
