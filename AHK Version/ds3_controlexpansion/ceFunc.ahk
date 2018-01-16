@@ -43,8 +43,8 @@
 				tempSpellCnt := spellCnt + 1
 				GuiControl, Choose, spellChoice, |%tempSpellCnt% 
 								
-				Gui, Add, Radio, x94 y100 w80 Group Checked%spellMode% vcastChoice, Standard
-				Gui, Add, Radio, x30 y100 w50 Checked%faithOn%, Faith
+				Gui, Add, Radio, x104 y100 w80 Group Checked%spellMode% vcastChoice, Focus
+				Gui, Add, Radio, x30 y100 w70 Checked%weapCast%, Weapon
 				
 				Gui, Add, Text, x12 y129 w70 h20 +Right, Use Item = 
 				Gui, Add, Edit, x86 y126 w80 h20 cGreen +Center vuseItemM, %useItem%
@@ -179,12 +179,9 @@
 						temp_TypeOverride := (%currentTypeOverride%)			
 						Gui, Add, Checkbox, x668 y%new_y% w20 h20 Checked%temp_typeOverride% vspell%iteration%_typeOverrideM,
 						
-						if (faithOn)
-						{
-							currentUP := "spell" . iteration . "_UP"
-							temp_UP := (%currentUP%)
-							Gui, Add, Checkbox, x692 y%new_y% w20 h20 Checked%temp_UP% vspell%iteration%_UPM, 
-						}
+						currentUP := "spell" . iteration . "_UP"
+						temp_UP := (%currentUP%)
+						Gui, Add, Checkbox, x692 y%new_y% w20 h20 Checked%temp_UP% vspell%iteration%_UPM, 
 					}
 					
 					iteration++
@@ -235,12 +232,9 @@
 					temp_TypeOverride := (%currentTypeOverride%)			
 					Gui, Add, Checkbox, x944 y%new_y% w20 h20 Checked%temp_typeOverride% vspell%iteration%a_typeOverrideM, 
 					
-					if (faithOn)
-					{
-						currentUP := "spell" . iteration . "a_UP"
-						temp_UP := (%currentUP%)
-						Gui, Add, Checkbox, x968 y%new_y% w20 h20 Checked%temp_UP% vspell%iteration%a_UPM, 
-					}
+					currentUP := "spell" . iteration . "a_UP"
+					temp_UP := (%currentUP%)
+					Gui, Add, Checkbox, x968 y%new_y% w20 h20 Checked%temp_UP% vspell%iteration%a_UPM, 
 					
 					iteration++
 					ROvar := ""
@@ -319,14 +313,14 @@
 					SaveSettingsFile()
 					Sleep, 300
 					
-					; Gui, Destroy
-					; Menu, tray, deleteall
+					Gui, Destroy
+					Menu, tray, deleteall
 					Gosub, OnStart
 					
 					IfWinExist ahk_class AutoHotkeyGUI
 						WinActivate		
 					
-					; GoSub, Settings
+					GoSub, Settings
 					Return
 					
 				ButtonOK:
@@ -426,11 +420,16 @@
 		
 		SelectUse(F_start, "spell")
 		
-		; Rapid Fire Loop
+		; Charge up Loop
 		if (F_spellHold = 1 || F_sendKey = atkMHLight || F_sendKey = atkMHStrong || F_sendKey = atkOHLight || F_sendKey = atkOHStrong)
 		{
 			tempKey := MacroCheck(F_spellHand, F_spellOverride, F_spellUP)
-			send {%tempKey% down}
+			pressKeyDown := pressKeyDown(tempKey)
+			global ADownResult := pressKeyDown
+			pressKeyUp := pressKeyUp(tempKey)
+			global AnUpResult := pressKeyUp
+			
+			send %pressKeyDown%
 			cleanKey := CleanKey(F_sendKey)
 			Loop 
 			{				
@@ -438,17 +437,22 @@
 					break
 				sleep, 30
 			} 
-			send {%tempKey% up}
+			send %pressKeyUp%
 		}
-		; Charge up Loop
+		; Rapid Fire Loop
 		else
 		{
 			tempKey := MacroCheck(F_spellHand, F_spellOverride, F_spellUP)
+			pressKeyDown := pressKeyDown(tempKey)
+			global ADownResult := pressKeyDown
+			pressKeyUp := pressKeyUp(tempKey)
+			global AnUpResult := pressKeyUp
+			
 			Loop
 			{
-				send {%tempKey% down}
+				send %pressKeyDown%
 				sleep, 60
-				send {%tempKey% up}
+				send %pressKeyUp%
 				
 				cleanKey := CleanKey(F_sendKey)
 				Loop 12
@@ -526,12 +530,37 @@
 	CleanKey(F_sendKey)
 	{
 		StringReplace, F_cleanKey, F_sendKey, *, , All 
+		;if !InStr(F_sendKey, "<")
 		StringReplace, F_cleanKey, F_cleanKey, <, , All 
 		StringReplace, F_cleanKey, F_cleanKey, >, , All 
 		StringReplace, F_cleanKey, F_cleanKey, ^, , All 
 		StringReplace, F_cleanKey, F_cleanKey, +, , All 
 		StringReplace, F_cleanKey, F_cleanKey, !, , All 
 		return F_cleanKey
+	}
+	
+	PressKeyDown(F_sendKey)
+	{
+		F_pressKeyDown := "{" . F_sendKey . " Down}"
+		StringReplace, F_pressKeyDown, F_pressKeyDown, +, Shift Down}{, All 
+		StringReplace, F_pressKeyDown, F_pressKeyDown, ^, Ctrl Down}{, All 
+		StringReplace, F_pressKeyDown, F_pressKeyDown, !, Alt Down}{, All 
+		StringReplace, F_pressKeyDown, F_pressKeyDown, <, L, All 
+		StringReplace, F_pressKeyDown, F_pressKeyDown, >, R, All 
+		StringReplace, F_pressKeyDown, F_pressKeyDown, *, , All 
+		return F_pressKeyDown
+	}
+	
+	PressKeyUp(F_sendKey)
+	{
+		F_pressKeyUp := "{" . F_sendKey . " Up}"
+		StringReplace, F_pressKeyUp, F_pressKeyUp, +, Shift Up}{, All 
+		StringReplace, F_pressKeyUp, F_pressKeyUp, ^, Ctrl Up}{, All 
+		StringReplace, F_pressKeyUp, F_pressKeyUp, !, Alt Up}{, All 
+		StringReplace, F_pressKeyUp, F_pressKeyUp, <, L, All 
+		StringReplace, F_pressKeyUp, F_pressKeyUp, >, R, All 
+		StringReplace, F_pressKeyUp, F_pressKeyUp, *, , All 
+		return F_pressKeyUp
 	}
 	
 	SelectUse(F_start, itemORspell)
@@ -623,21 +652,21 @@
 	
 	AssignSpellKeys()
 	{	
-		if (spellMode = 2) 
+		if (spellMode = 2) 	;Weapon
 		{
-			faithOn := 1
-			spellMacro := atkOHLight 
-			otherMacro := atkOHStrong
-			spellMacroR := atkMHLight 
-			otherMacroR := atkMHStrong
-		}
-		else 
-		{
-			faithOn := 0
+			weapCast := 1
 			spellMacro := atkOHStrong
 			otherMacro := atkOHLight 
 			spellMacroR := atkMHStrong
 			otherMacroR := atkMHLight
+		}
+		else 				;Focus
+		{
+			weapCast := 0
+			spellMacro := atkOHLight 
+			otherMacro := atkOHStrong
+			spellMacroR := atkMHLight 
+			otherMacroR := atkMHStrong
 		}
 		
 		/*
@@ -704,7 +733,7 @@
 			}
 			if (spell5a)
 			{
-				spell5Tempa := MacroReplace(spell5a)
+				spell5aTemp := MacroReplace(spell5a)
 				Hotkey, IfWinActive, ahk_exe DarkSoulsIII.exe
 				Hotkey, %spell5aTemp%, b_spell5a		
 			}

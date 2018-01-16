@@ -29,3 +29,17 @@ OnStart:
 		
 	#IfWinActive ahk_exe DarkSoulsIII.exe
 	<^<+F1::GoSub, Settings
+	
+	#IfWinActive ahk_exe DarkSoulsIII.exe
+	^!WheelUp::	
+		send {%nextSpell% down}
+		sleep, 60
+		send {%nextSpell% up}
+		return
+		
+	#IfWinActive ahk_exe DarkSoulsIII.exe
+	^!WheelDown::
+		send {%nextItem% down}
+		sleep, 60
+		send {%nextItem% up}
+		return
