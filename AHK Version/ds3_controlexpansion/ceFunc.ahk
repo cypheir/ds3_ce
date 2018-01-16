@@ -480,7 +480,7 @@
 			}
 			else
 			{
-				IniWrite, %SelectedFile%, %currentSettingsFile%, General, DS3_installpath
+				IniWrite, %SelectedFile%, ds3_controlexpansion\session.ini, Session, DS3_installpath
 				GoSub, OnStart
 			}
 		}
