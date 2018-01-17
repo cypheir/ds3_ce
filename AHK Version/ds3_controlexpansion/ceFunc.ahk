@@ -23,13 +23,13 @@
 			else
 				Run, %DS3_installpath%
 			Return
-
+			
 		Refresh:
 			Reload
 			Sleep 1000
 			MsgBox, 4,, The script could not be reloaded. Please close and relaunch manually.
 			Return
-		
+			
 		Settings:		
 			; Column 1
 				Gui, Add, Text, x12 y9 w194 h20 +Center, [ Main Settings ]
@@ -48,19 +48,19 @@
 				
 				Gui, Add, Text, x12 y129 w70 h20 +Right, Use Item = 
 				Gui, Add, Edit, x86 y126 w80 h20 cGreen +Center vuseItemM, %useItem%
-			
+				
 				Gui, Add, Text, x12 y159 w70 h20 +Right, RH Light = 
 				Gui, Add, Edit, x86 y156 w80 h20 cGreen +Center vRHLightM, %atkMHLight%
-			
+				
 				Gui, Add, Text, x12 y189 w70 h20 +Right, RH Strong = 
 				Gui, Add, Edit, x86 y186 w80 h20 cGreen +Center vRHStrongM, %atkMHStrong%
-			
+				
 				Gui, Add, Text, x12 y219 w70 h20 +Right, LH Light = 
 				Gui, Add, Edit, x86 y216 w80 h20 cGreen +Center vLHLightM, %atkOHLight%
-			
+				
 				Gui, Add, Text, x12 y249 w70 h20 +Right, LH Strong = 
 				Gui, Add, Edit, x86 y246 w80 h20 cGreen +Center vLHStrongM, %atkOHStrong%
-			
+				
 				Gui, Add, Text, x12 y279 w70 h20 +Right, Next Spell = 
 				Gui, Add, Edit, x86 y276 w80 h20 cGreen +Center vnextSpellM, %nextSpell%
 				
@@ -99,10 +99,10 @@
 					iteration++
 					new_y += 33
 				}
-			
+				
 			; Column 2b  AltItems |  X Starting at 308, Y starting at 9
 				Gui, Add, Text, x308 y9 w102 h20 +Center, [ Alt-Item Binds ]
-
+				
 				col2b_y := 9
 				new_y := col2b_y + 30
 				
